@@ -1,11 +1,11 @@
 /*
- * Sega Controller Reader
+ * Sega Controller Reader (Keyboard)
  * Author: Jon Thysell <thysell@gmail.com>
  * Version: 1.1
  * Date: 9/29/2014
  *
  * Reads buttons presses from Sega Genesis 3/6 button controllers
- * and reports their state via the Serial connection. Handles hot
+ * and reports their state via keyboard button presses. Handles hot
  * swapping of controllers and auto-switches between 3 and 6 button
  * polling patterns.
  *
@@ -43,7 +43,7 @@ typedef struct
 // Controller DB9 Pin to Button Flag Mappings
 // First column is the controller index, second column
 // is the Arduino pin that the controller's DB9 pin is
-// attached to, remaing columns are the button flags
+// attached to
 input inputMap[] = {
   { 0,  2,  UP,    UP,     Z    }, // P0 DB9 Pin 1
   { 0,  3,  DOWN,  DOWN,   Y    }, // P0 DB9 Pin 2
@@ -57,6 +57,43 @@ input inputMap[] = {
   { 1,  A3, ON,    RIGHT,  MODE }, // P1 DB9 Pin 4
   { 1,  A4, A,     B,      0    }, // P1 DB9 Pin 6
   { 1,  A5, START, C,      0    }  // P1 DB9 Pin 9
+};
+ 
+typedef struct
+{
+  int player;
+  int flag;
+  char key;
+} output;
+ 
+// Controller Button Flag to Keyboard Mappings
+// First column is the controller index, second column
+// is the button flag, third is keyboard key
+output outputMap[] = {
+  { 0, UP,    KEY_UP_ARROW },
+  { 0, DOWN,  KEY_DOWN_ARROW },
+  { 0, LEFT,  KEY_LEFT_ARROW },
+  { 0, RIGHT, KEY_RIGHT_ARROW },
+  { 0, START, KEY_RETURN },
+  { 0, A,     'z' },
+  { 0, B,     'x' },
+  { 0, C,     'c' },
+  { 0, X,     'a' },
+  { 0, Y,     's' },
+  { 0, Z,     'd' },
+  { 0, MODE,  'q' },
+  { 1, UP,    'i' },
+  { 1, DOWN,  'k' },
+  { 1, LEFT,  'j' },
+  { 1, RIGHT, 'l' },
+  { 1, START, 't' },
+  { 1, A,     'v' },
+  { 1, B,     'b' },
+  { 1, C,     'n' },
+  { 1, X,     'f' },
+  { 1, Y,     'g' },
+  { 1, Z,     'h' },
+  { 1, MODE,  'r' }
 };
  
 // Controller State
@@ -82,7 +119,7 @@ void setup()
     digitalWrite(SELECT[i], HIGH);
   }
   
-  Serial.begin(9600);
+  Keyboard.begin();
 }
  
 void loop()
@@ -180,37 +217,26 @@ void read6buttons(int player)
  
 void sendStates()
 {
-  // Only report controller states if at least one has changed
-  boolean hasChanged = false;
-  
-  for (int i = 0; i < PLAYERS; i++)
+  for (int i = 0; i < sizeof(outputMap) / sizeof(output); i++)
   {
-    if (currentState[i] != lastState[i])
+    int last = (lastState[outputMap[i].player] & outputMap[i].flag);
+    int current = (currentState[outputMap[i].player] & outputMap[i].flag);
+     
+    if (last != current)
     {
-      hasChanged = true;
+      if (current == outputMap[i].flag)
+      {
+        Keyboard.press(outputMap[i].key);
+      }
+      else
+      {
+        Keyboard.release(outputMap[i].key);
+      }
     }
   }
   
-  if (hasChanged)
+  for (int i = 0; i < PLAYERS; i++)
   {
-    for (int i = 0; i < PLAYERS; i++)
-    {
-      Serial.print((currentState[i] & ON) == ON ? "+" : "-");
-      Serial.print((currentState[i] & UP) == UP ? "U" : "0");
-      Serial.print((currentState[i] & DOWN) == DOWN ? "D" : "0");
-      Serial.print((currentState[i] & LEFT) == LEFT ? "L" : "0");
-      Serial.print((currentState[i] & RIGHT) == RIGHT ? "R" : "0");
-      Serial.print((currentState[i] & START) == START ? "S" : "0");
-      Serial.print((currentState[i] & A) == A ? "A" : "0");
-      Serial.print((currentState[i] & B) == B ? "B" : "0");
-      Serial.print((currentState[i] & C) == C ? "C" : "0");
-      Serial.print((currentState[i] & X) == X ? "X" : "0");
-      Serial.print((currentState[i] & Y) == Y ? "Y" : "0");
-      Serial.print((currentState[i] & Z) == Z ? "Z" : "0");
-      Serial.print((currentState[i] & MODE) == MODE ? "M" : "0");
-         
-      Serial.print((i == 0) ? "," : "\n");
-      lastState[i] = currentState[i];
-    }
+    lastState[i] = currentState[i];
   }
 }
