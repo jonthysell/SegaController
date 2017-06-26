@@ -10,4 +10,4 @@ More details at:
 * [Reading Sega Genesis controllers with Arduino](https://jonthysell.com/2014/07/26/reading-sega-genesis-controllers-with-arduino/)
 * [Sega Genesis controllers and Arduino revisited](https://jonthysell.com/2014/09/29/sega-genesis-controllers-and-arduino-revisited/)
 
-Copyright (c) 2014 Jon Thysell.
+Copyright (c) 2014 Jon Thysell
