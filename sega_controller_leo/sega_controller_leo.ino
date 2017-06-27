@@ -62,7 +62,7 @@ enum flags {
 typedef struct
 {
   int player;
-  int flag;
+  flags flag;
   char key;
 } output;
  
