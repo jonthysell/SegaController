@@ -1,8 +1,8 @@
 /*
  * Sega Controller Reader
  * Author: Jon Thysell <thysell@gmail.com>
- * Version: 1.1
- * Date: 9/29/2014
+ * Version: 1.2
+ * Date: 6/27/2017
  *
  * Reads buttons presses from Sega Genesis 3/6 button controllers
  * and reports their state via the Serial connection. Handles hot
@@ -12,74 +12,64 @@
  */
  
 const int PLAYERS = 2;
- 
-// Controller Button Flags
-const int ON = 1;
-const int UP = 2;
-const int DOWN = 4;
-const int LEFT = 8;
-const int RIGHT = 16;
-const int START = 32;
-const int A = 64;
-const int B = 128;
-const int C = 256;
-const int X = 512;
-const int Y = 1024;
-const int Z = 2048;
-const int MODE = 4096;
- 
-// Controller DB9 Pin 7 Mappings
-const int SELECT[] = { 8, 9 };
- 
-typedef struct
-{
-  int player;
-  int pin;
-  int lowFlag;
-  int highFlag;
-  int pulse3Flag;
-} input;
- 
-// Controller DB9 Pin to Button Flag Mappings
-// First column is the controller index, second column
-// is the Arduino pin that the controller's DB9 pin is
-// attached to, remaing columns are the button flags
-input inputMap[] = {
-  { 0,  2,  UP,    UP,     Z    }, // P0 DB9 Pin 1
-  { 0,  3,  DOWN,  DOWN,   Y    }, // P0 DB9 Pin 2
-  { 0,  4,  ON,    LEFT,   X    }, // P0 DB9 Pin 3
-  { 0,  5,  ON,    RIGHT,  MODE }, // P0 DB9 Pin 4
-  { 0,  6,  A,     B,      0    }, // P0 DB9 Pin 6
-  { 0,  7,  START, C,      0    }, // P0 DB9 Pin 9
-  { 1,  A0, UP,    UP,     Z    }, // P1 DB9 Pin 1
-  { 1,  A1, DOWN,  DOWN,   Y    }, // P1 DB9 Pin 2
-  { 1,  A2, ON,    LEFT,   X    }, // P1 DB9 Pin 3
-  { 1,  A3, ON,    RIGHT,  MODE }, // P1 DB9 Pin 4
-  { 1,  A4, A,     B,      0    }, // P1 DB9 Pin 6
-  { 1,  A5, START, C,      0    }  // P1 DB9 Pin 9
+const int INPUT_PINS_PER_PLAYER = 6;
+
+// Mapping controller DB9 pin 7 to Arduino pin
+const int SELECT[] = {
+  8, // Player 1
+  9 // Player 2
+};
+
+// Mapping controller DB9 input pins to Arduino pins
+int inputPins[][INPUT_PINS_PER_PLAYER] = {
+  // { DB9 Pin 1, DB9 Pin 2, DB9 Pin 3, DB9 Pin 4, DB9 Pin 6, DB9 Pin 9 }
+  { 2, 3, 4, 5, 6, 7 }, // Player 1
+  { A0, A1, A2, A3, A4, A5 } // Player 2
+};
+
+// Controller button flags
+enum flags {
+  ON = 1,
+  UP = 2,
+  DOWN = 4,
+  LEFT = 8,
+  RIGHT = 16,
+  START = 32,
+  A = 64,
+  B = 128,
+  C = 256,
+  X = 512,
+  Y = 1024,
+  Z = 2048,
+  MODE = 4096
 };
  
-// Controller State
-int currentState[] = { 0, 0 };
-int lastState[] = { -1, -1 };
+// Controller states
+word currentState[] = { 0, 0 };
+word lastState[] = { -1, -1 };
  
 // Default to three-button mode until six-button connects
 boolean sixButtonMode[] = { false, false };
- 
+
+const int CYCLES = 8;
+
 void setup()
 {
   // Setup input pins
-  for (int i = 0; i < sizeof(inputMap) / sizeof(input); i++)
+  for (int player = 0; player < PLAYERS; player++)
   {
-    pinMode(inputMap[i].pin, INPUT);
-    digitalWrite(inputMap[i].pin, HIGH);
+    for (int pin = 0; pin < INPUT_PINS_PER_PLAYER; pin++)
+    {
+      pinMode(inputPins[player][pin], INPUT);
+      digitalWrite(inputPins[player][pin], HIGH);
+    }
   }
   
   // Setup select pins
-  for (int i = 0; i < PLAYERS; i++)
+  for (int player = 0; player < PLAYERS; player++)
   {
-    pinMode(SELECT[i], OUTPUT);
-    digitalWrite(SELECT[i], HIGH);
+    pinMode(SELECT[player], OUTPUT);
+    digitalWrite(SELECT[player], HIGH);
   }
   
   Serial.begin(9600);
@@ -87,22 +77,32 @@ void setup()
  
 void loop()
 {
+  unsigned long loopStart = millis();
+  
   readButtons();
   sendStates();
+  
+  // Delay up to 16ms in order to simulate one frame @ 60 fps
+  delay(max(16 - (millis() - loopStart), 0));
 }
  
 void readButtons()
 {
-  for (int i = 0; i < PLAYERS; i++)
+  for (int player = 0; player < PLAYERS; player++)
   {
-    resetState(i);
-    if (sixButtonMode[i])
+    resetState(player);
+
+    digitalWrite(SELECT[player], LOW);
+
+    for (int cycle = 0; cycle < CYCLES; cycle++)
     {
-      read6buttons(i);
+      readButtons(player, cycle);
     }
-    else
+
+    // When a controller disconnects, revert to three-button polling
+    if ((currentState[player] & ON) == 0)
     {
-      read3buttons(i);
+      sixButtonMode[player] = false;
     }
   }
 }
@@ -111,71 +111,43 @@ void resetState(int player)
 {
   currentState[player] = 0;
 }
- 
-void read3buttons(int player)
+
+void readButtons(int player, int cycle)
 {
-  // Set SELECT LOW and read lowFlag
-  digitalWrite(SELECT[player], LOW);
-     
-  delayMicroseconds(20);
-     
-  for (int i = 0; i < sizeof(inputMap) / sizeof(input); i++)
-  {
-    if (inputMap[i].player == player && digitalRead(inputMap[i].pin) == LOW)
-    {
-      currentState[player] |= inputMap[i].lowFlag;
-    }
-  }
- 
-  // Set SELECT HIGH and read highFlag
-  digitalWrite(SELECT[player], HIGH);
-     
-  delayMicroseconds(20);
-     
-  for (int i = 0; i < sizeof(inputMap) / sizeof(input); i++)
-  {
-    if (inputMap[i].player == player && digitalRead(inputMap[i].pin) == LOW)
-    {
-      currentState[player] |= inputMap[i].highFlag;
-    }
-  }
-    
-  // When a six-button first connects, it'll spam UP and DOWN,
-  // which signals the game to switch to 6-button polling
-  if (currentState[player] == (ON | UP | DOWN))
-  {
-    sixButtonMode[player] = true;
-  }
-  // When a controller disconnects, revert to three-button polling
-  else if ((currentState[player] & ON) == 0)
-  {
-    sixButtonMode[player] = false;
-  }
+  digitalWrite(SELECT[player], cycle % 2 == 0 ? LOW : HIGH);
   
-  delayMicroseconds(20);
-}
- 
-void read6buttons(int player)
-{
-  // Poll for three-button states twice
-  read3buttons(player);
-  read3buttons(player);
-  
-  // After two three-button polls, pulse the SELECT line
-  // so the six-button reports the higher button states
-  digitalWrite(SELECT[player], LOW);
-  delayMicroseconds(20);
-  digitalWrite(SELECT[player], HIGH);
-  
-  for(int i = 0; i < sizeof(inputMap) / sizeof(input); i++)
+  // Read flags
+  switch (cycle)
   {
-    if (inputMap[i].player == player && digitalRead(inputMap[i].pin) == LOW)
-    {
-      currentState[player] |= inputMap[i].pulse3Flag;
-    }
+    case 2:
+      currentState[player] |= (digitalRead(inputPins[player][0]) == LOW) ? UP : 0;
+      currentState[player] |= (digitalRead(inputPins[player][1]) == LOW) ? DOWN : 0;
+      currentState[player] |= (digitalRead(inputPins[player][2]) == LOW) ? ON : 0;
+      currentState[player] |= (digitalRead(inputPins[player][3]) == LOW) ? ON : 0;
+      currentState[player] |= (digitalRead(inputPins[player][4]) == LOW) ? A : 0;
+      currentState[player] |= (digitalRead(inputPins[player][5]) == LOW) ? START : 0;
+      break;
+    case 3:
+      currentState[player] |= (digitalRead(inputPins[player][0]) == LOW) ? UP : 0;
+      currentState[player] |= (digitalRead(inputPins[player][1]) == LOW) ? DOWN : 0;
+      currentState[player] |= (digitalRead(inputPins[player][2]) == LOW) ? LEFT : 0;
+      currentState[player] |= (digitalRead(inputPins[player][3]) == LOW) ? RIGHT : 0;
+      currentState[player] |= (digitalRead(inputPins[player][4]) == LOW) ? B : 0;
+      currentState[player] |= (digitalRead(inputPins[player][5]) == LOW) ? C : 0;
+      break;
+    case 4:
+      sixButtonMode[player] = (digitalRead(inputPins[player][0]) == LOW && digitalRead(inputPins[player][1]) == LOW);
+      break;
+    case 5:
+      if (sixButtonMode[player])
+      {
+        currentState[player] |= (digitalRead(inputPins[player][0]) == LOW) ? Z : 0;
+        currentState[player] |= (digitalRead(inputPins[player][1]) == LOW) ? Y : 0;
+        currentState[player] |= (digitalRead(inputPins[player][2]) == LOW) ? X : 0;
+        currentState[player] |= (digitalRead(inputPins[player][3]) == LOW) ? MODE : 0;
+      }
+      break;
   }
-  
-  delayMicroseconds(1000);
 }
  
 void sendStates()
@@ -183,9 +155,9 @@ void sendStates()
   // Only report controller states if at least one has changed
   boolean hasChanged = false;
   
-  for (int i = 0; i < PLAYERS; i++)
+  for (int player = 0; player < PLAYERS; player++)
   {
-    if (currentState[i] != lastState[i])
+    if (currentState[player] != lastState[player])
     {
       hasChanged = true;
     }
@@ -193,24 +165,24 @@ void sendStates()
   
   if (hasChanged)
   {
-    for (int i = 0; i < PLAYERS; i++)
+    for (int player = 0; player < PLAYERS; player++)
     {
-      Serial.print((currentState[i] & ON) == ON ? "+" : "-");
-      Serial.print((currentState[i] & UP) == UP ? "U" : "0");
-      Serial.print((currentState[i] & DOWN) == DOWN ? "D" : "0");
-      Serial.print((currentState[i] & LEFT) == LEFT ? "L" : "0");
-      Serial.print((currentState[i] & RIGHT) == RIGHT ? "R" : "0");
-      Serial.print((currentState[i] & START) == START ? "S" : "0");
-      Serial.print((currentState[i] & A) == A ? "A" : "0");
-      Serial.print((currentState[i] & B) == B ? "B" : "0");
-      Serial.print((currentState[i] & C) == C ? "C" : "0");
-      Serial.print((currentState[i] & X) == X ? "X" : "0");
-      Serial.print((currentState[i] & Y) == Y ? "Y" : "0");
-      Serial.print((currentState[i] & Z) == Z ? "Z" : "0");
-      Serial.print((currentState[i] & MODE) == MODE ? "M" : "0");
+      Serial.print((currentState[player] & ON) == ON ? "+" : "-");
+      Serial.print((currentState[player] & UP) == UP ? "U" : "0");
+      Serial.print((currentState[player] & DOWN) == DOWN ? "D" : "0");
+      Serial.print((currentState[player] & LEFT) == LEFT ? "L" : "0");
+      Serial.print((currentState[player] & RIGHT) == RIGHT ? "R" : "0");
+      Serial.print((currentState[player] & START) == START ? "S" : "0");
+      Serial.print((currentState[player] & A) == A ? "A" : "0");
+      Serial.print((currentState[player] & B) == B ? "B" : "0");
+      Serial.print((currentState[player] & C) == C ? "C" : "0");
+      Serial.print((currentState[player] & X) == X ? "X" : "0");
+      Serial.print((currentState[player] & Y) == Y ? "Y" : "0");
+      Serial.print((currentState[player] & Z) == Z ? "Z" : "0");
+      Serial.print((currentState[player] & MODE) == MODE ? "M" : "0");
          
-      Serial.print((i == 0) ? "," : "\n");
-      lastState[i] = currentState[i];
+      Serial.print((player == 0) ? "," : "\n");
+      lastState[player] = currentState[player];
     }
   }
 }
