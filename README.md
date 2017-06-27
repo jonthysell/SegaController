@@ -1,13 +1,31 @@
 # SegaController #
 
-SegaController consists of two simple Arduino sketches which read the buttons from the Sega Genesis three and six button controllers.
+The SegaController library enables your Arduino sketches to read Sega Genesis / Mega Drive controllers.
 
-1. sega_contoller: Reports button presses via Serial. Tested on the Uno and Leonardo.
-2. sega_controller_leo: Reports button presses via Keyboard. Tested on the Leonardo.
+## Installation ##
 
-More details at:
+1. Download the latest source code zip from https://github.com/jonthysell/SegaController/releases/latest
+2. Open the Arduino IDE
+3. Open "Sketch > Include Library > Add .ZIP Library..."
+4. Select the zip file you downloaded in step 1
 
-* [Reading Sega Genesis controllers with Arduino](https://jonthysell.com/2014/07/26/reading-sega-genesis-controllers-with-arduino/)
+## Getting Started ##
+
+There are two example sketches included which make use of the SegaController library. See "File > Examples > SegaController" in the Arduino IDE after installation.
+
+### SegaControllerSerialReader ###
+
+This sketch reads the state of a single controller and reports it via the Serial interface. Note that it only reports when the state has changed (a button has been pressed or released). It's good for validating you've got your pins wired up properly.
+
+### SegaControllerKeyboardReader ###
+
+This sketch reads the state of a single controller and simulates key presses via the Keyboard interface. You can specify which buttons correspond to which keys in the sketch. This sketch requires a 32u4 based board (such as the Leonardo, Micro, or Due).
+
+## Resources ##
+
 * [Sega Genesis controllers and Arduino revisited](https://jonthysell.com/2014/09/29/sega-genesis-controllers-and-arduino-revisited/)
+* [Reading Sega Genesis controllers with Arduino](https://jonthysell.com/2014/07/26/reading-sega-genesis-controllers-with-arduino/)
+* [Charles Rosenberg’s Sega Six Button Controller Hardware Info](http://www.cs.cmu.edu/~chuck/infopg/segasix.txt)
+* [Six Button Control Pad (Mega Drive) on SegaRetro](http://www.segaretro.org/Six_Button_Control_Pad_(Mega_Drive))
 
-Copyright (c) 2014 Jon Thysell
+Copyright (c) 2017 Jon Thysell
