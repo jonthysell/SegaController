@@ -29,10 +29,10 @@
 
 typedef struct
 {
-  word button;
-  char key;
+    word button;
+    char key;
 } output;
- 
+
 // Controller button to keyboard mapping
 output outputMap[] = {
     { SC_BTN_UP,    KEY_UP_ARROW },
@@ -49,6 +49,8 @@ output outputMap[] = {
     { SC_BTN_MODE,  'q' }
 };
 
+// Specify the Arduino pins that are connected to
+// DB9 Pin 7, DB9 Pin 1, DB9 Pin 2, DB9 Pin 3, DB9 Pin 4, DB9 Pin 6, DB9 Pin 9
 SegaController controller(8, 2, 3, 4, 5, 6, 7);
 
 // Controller states
@@ -72,7 +74,7 @@ void sendStates()
     {
         int last = (lastState & outputMap[i].button);
         int current = (currentState & outputMap[i].button);
-         
+
         if (last != current)
         {
             if (current == outputMap[i].button)
@@ -85,6 +87,6 @@ void sendStates()
             }
         }
     }
-    
+
     lastState = currentState;
 }

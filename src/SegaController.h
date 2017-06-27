@@ -29,19 +29,19 @@
 
 enum
 {
-  SC_CTL_ON    = 1, // The controller is connected
-  SC_BTN_UP    = 2,
-  SC_BTN_DOWN  = 4,
-  SC_BTN_LEFT  = 8,
-  SC_BTN_RIGHT = 16,
-  SC_BTN_START = 32,
-  SC_BTN_A     = 64,
-  SC_BTN_B     = 128,
-  SC_BTN_C     = 256,
-  SC_BTN_X     = 512,
-  SC_BTN_Y     = 1024,
-  SC_BTN_Z     = 2048,
-  SC_BTN_MODE  = 4096
+    SC_CTL_ON    = 1, // The controller is connected
+    SC_BTN_UP    = 2,
+    SC_BTN_DOWN  = 4,
+    SC_BTN_LEFT  = 8,
+    SC_BTN_RIGHT = 16,
+    SC_BTN_START = 32,
+    SC_BTN_A     = 64,
+    SC_BTN_B     = 128,
+    SC_BTN_C     = 256,
+    SC_BTN_X     = 512,
+    SC_BTN_Y     = 1024,
+    SC_BTN_Z     = 2048,
+    SC_BTN_MODE  = 4096
 };
 
 const int SC_INPUT_PINS = 6;
