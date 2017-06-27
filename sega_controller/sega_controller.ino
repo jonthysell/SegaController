@@ -1,15 +1,28 @@
-/*
- * Sega Controller Reader
- * Author: Jon Thysell <thysell@gmail.com>
- * Version: 1.2
- * Date: 6/27/2017
- *
- * Reads buttons presses from Sega Genesis 3/6 button controllers
- * and reports their state via the Serial connection. Handles hot
- * swapping of controllers and auto-switches between 3 and 6 button
- * polling patterns.
- *
- */
+// 
+// sega_controller.ino
+//  
+// Author:
+//       Jon Thysell <thysell@gmail.com>
+// 
+// Copyright (c) 2014, 2017 Jon Thysell <http://jonthysell.com>
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
  
 const int PLAYERS = 2;
 const int INPUT_PINS_PER_PLAYER = 6;
@@ -45,8 +58,8 @@ enum flags {
 };
  
 // Controller states
-word currentState[] = { 0, 0 };
-word lastState[] = { -1, -1 };
+int currentState[] = { 0, 0 };
+int lastState[] = { -1, -1 };
  
 // Default to three-button mode until six-button connects
 boolean sixButtonMode[] = { false, false };
@@ -55,21 +68,18 @@ const int CYCLES = 8;
 
 void setup()
 {
-  // Setup input pins
   for (int player = 0; player < PLAYERS; player++)
   {
+    // Setup select pin
+    pinMode(SELECT[player], OUTPUT);
+    digitalWrite(SELECT[player], HIGH);
+
+    // Setup input pins
     for (int pin = 0; pin < INPUT_PINS_PER_PLAYER; pin++)
     {
       pinMode(inputPins[player][pin], INPUT);
       digitalWrite(inputPins[player][pin], HIGH);
     }
-  }
-  
-  // Setup select pins
-  for (int player = 0; player < PLAYERS; player++)
-  {
-    pinMode(SELECT[player], OUTPUT);
-    digitalWrite(SELECT[player], HIGH);
   }
   
   Serial.begin(9600);
