@@ -23,8 +23,6 @@ This sketch reads the state of a single controller and simulates key presses via
 
 ## Resources ##
 
-* [Sega Genesis controllers and Arduino revisited](https://jonthysell.com/2014/09/29/sega-genesis-controllers-and-arduino-revisited/)
-* [Reading Sega Genesis controllers with Arduino](https://jonthysell.com/2014/07/26/reading-sega-genesis-controllers-with-arduino/)
 * [Charles Rosenberg’s Sega Six Button Controller Hardware Info](http://www.cs.cmu.edu/~chuck/infopg/segasix.txt)
 * [Six Button Control Pad (Mega Drive) on SegaRetro](http://www.segaretro.org/Six_Button_Control_Pad_(Mega_Drive))
 
