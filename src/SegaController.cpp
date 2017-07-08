@@ -92,12 +92,15 @@ void SegaController::readCycle(int cycle)
     switch (cycle)
     {
         case 2:
-            _currentState |= (digitalRead(_inputPins[0]) == LOW) ? SC_BTN_UP : 0;
-            _currentState |= (digitalRead(_inputPins[1]) == LOW) ? SC_BTN_DOWN : 0;
-            _currentState |= (digitalRead(_inputPins[2]) == LOW) ? SC_CTL_ON : 0;
-            _currentState |= (digitalRead(_inputPins[3]) == LOW) ? SC_CTL_ON : 0;
-            _currentState |= (digitalRead(_inputPins[4]) == LOW) ? SC_BTN_A : 0;
-            _currentState |= (digitalRead(_inputPins[5]) == LOW) ? SC_BTN_START : 0;
+            // Check that a controller is connected
+            _currentState |= (digitalRead(_inputPins[2]) == LOW && digitalRead(_inputPins[3]) == LOW) ? SC_CTL_ON : 0;
+            
+            // Check controller is connected before reading A/Start to prevent bad reads when inserting/removing cable
+            if (_currentState & SC_CTL_ON)
+            {
+                _currentState |= (digitalRead(_inputPins[4]) == LOW) ? SC_BTN_A : 0;
+                _currentState |= (digitalRead(_inputPins[5]) == LOW) ? SC_BTN_START : 0;
+            }
             break;
         case 3:
             _currentState |= (digitalRead(_inputPins[0]) == LOW) ? SC_BTN_UP : 0;
