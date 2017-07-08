@@ -48,6 +48,8 @@ const int SC_INPUT_PINS = 6;
 
 const int SC_CYCLES = 8;
 
+const int SC_READ_DELAY_MS = 5; // Must be >= 3 to give 6-button controller time to reset
+
 class SegaController {
     public:
         SegaController(int db9_pin_7, int db9_pin_1, int db9_pin_2, int db9_pin_3, int db9_pin_4, int db9_pin_6, int db9_pin_9);
