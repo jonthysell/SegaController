@@ -77,7 +77,7 @@ void sendStates()
 
         if (last != current)
         {
-            if (current == outputMap[i].button)
+            if (current)
             {
                 Keyboard.press(outputMap[i].key);
             }

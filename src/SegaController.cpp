@@ -59,12 +59,14 @@ word SegaController::getState()
 {
     if (max(millis() - _lastReadTime, 0) < SC_READ_DELAY_MS)
     {
-        // Not enough time has elapsed, return previous state
+        // Not enough time has elapsed, return previously read state
         return _currentState;
     }
 
     // Update state before returning
     _currentState = 0;
+    
+    noInterrupts();
 
     digitalWrite(_selectPin, LOW);
 
@@ -80,12 +82,15 @@ word SegaController::getState()
     }
 
     _lastReadTime = millis();
+    
+    interrupts();
 
     return _currentState;
 }
 
 void SegaController::readCycle(int cycle)
 {
+    // Set the select pin high/low
     digitalWrite(_selectPin, cycle % 2 == 0 ? LOW : HIGH);
 
     // Read flags
@@ -98,11 +103,13 @@ void SegaController::readCycle(int cycle)
             // Check controller is connected before reading A/Start to prevent bad reads when inserting/removing cable
             if (_currentState & SC_CTL_ON)
             {
+                // Read input pins for A, Start
                 _currentState |= (digitalRead(_inputPins[4]) == LOW) ? SC_BTN_A : 0;
                 _currentState |= (digitalRead(_inputPins[5]) == LOW) ? SC_BTN_START : 0;
             }
             break;
         case 3:
+            // Read input pins for Up, Down, Left, Right, B, C
             _currentState |= (digitalRead(_inputPins[0]) == LOW) ? SC_BTN_UP : 0;
             _currentState |= (digitalRead(_inputPins[1]) == LOW) ? SC_BTN_DOWN : 0;
             _currentState |= (digitalRead(_inputPins[2]) == LOW) ? SC_BTN_LEFT : 0;
@@ -116,6 +123,7 @@ void SegaController::readCycle(int cycle)
         case 5:
             if (_sixButtonMode)
             {
+                // Read input pins for X, Y, Z, Mode
                 _currentState |= (digitalRead(_inputPins[0]) == LOW) ? SC_BTN_Z : 0;
                 _currentState |= (digitalRead(_inputPins[1]) == LOW) ? SC_BTN_Y : 0;
                 _currentState |= (digitalRead(_inputPins[2]) == LOW) ? SC_BTN_X : 0;

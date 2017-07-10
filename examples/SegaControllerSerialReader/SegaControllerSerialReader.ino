@@ -50,19 +50,19 @@ void sendState()
     // Only report controller state if it's changed
     if (currentState != lastState)
     {
-        Serial.print((currentState & SC_CTL_ON) == SC_CTL_ON ? "+" : "-");
-        Serial.print((currentState & SC_BTN_UP) == SC_BTN_UP ? "U" : "0");
-        Serial.print((currentState & SC_BTN_DOWN) == SC_BTN_DOWN ? "D" : "0");
-        Serial.print((currentState & SC_BTN_LEFT) == SC_BTN_LEFT ? "L" : "0");
-        Serial.print((currentState & SC_BTN_RIGHT) == SC_BTN_RIGHT ? "R" : "0");
-        Serial.print((currentState & SC_BTN_START) == SC_BTN_START ? "S" : "0");
-        Serial.print((currentState & SC_BTN_A) == SC_BTN_A ? "A" : "0");
-        Serial.print((currentState & SC_BTN_B) == SC_BTN_B ? "B" : "0");
-        Serial.print((currentState & SC_BTN_C) == SC_BTN_C ? "C" : "0");
-        Serial.print((currentState & SC_BTN_X) == SC_BTN_X ? "X" : "0");
-        Serial.print((currentState & SC_BTN_Y) == SC_BTN_Y ? "Y" : "0");
-        Serial.print((currentState & SC_BTN_Z) == SC_BTN_Z ? "Z" : "0");
-        Serial.print((currentState & SC_BTN_MODE) == SC_BTN_MODE ? "M" : "0");
+        Serial.print((currentState & SC_CTL_ON)    ? "+" : "-");
+        Serial.print((currentState & SC_BTN_UP)    ? "U" : "0");
+        Serial.print((currentState & SC_BTN_DOWN)  ? "D" : "0");
+        Serial.print((currentState & SC_BTN_LEFT)  ? "L" : "0");
+        Serial.print((currentState & SC_BTN_RIGHT) ? "R" : "0");
+        Serial.print((currentState & SC_BTN_START) ? "S" : "0");
+        Serial.print((currentState & SC_BTN_A)     ? "A" : "0");
+        Serial.print((currentState & SC_BTN_B)     ? "B" : "0");
+        Serial.print((currentState & SC_BTN_C)     ? "C" : "0");
+        Serial.print((currentState & SC_BTN_X)     ? "X" : "0");
+        Serial.print((currentState & SC_BTN_Y)     ? "Y" : "0");
+        Serial.print((currentState & SC_BTN_Z)     ? "Z" : "0");
+        Serial.print((currentState & SC_BTN_MODE)  ? "M" : "0");
 
         Serial.print("\n");
         lastState = currentState;
