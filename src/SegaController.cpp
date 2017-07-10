@@ -27,7 +27,7 @@
 #include "Arduino.h"
 #include "SegaController.h"
 
-SegaController::SegaController(int db9_pin_7, int db9_pin_1, int db9_pin_2, int db9_pin_3, int db9_pin_4, int db9_pin_6, int db9_pin_9)
+SegaController::SegaController(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9)
 {
     // Set pins
     _selectPin = db9_pin_7;
@@ -44,7 +44,7 @@ SegaController::SegaController(int db9_pin_7, int db9_pin_1, int db9_pin_2, int 
     digitalWrite(_selectPin, HIGH);
 
     // Setup input pins
-    for (int i = 0; i < SC_INPUT_PINS; i++)
+    for (byte i = 0; i < SC_INPUT_PINS; i++)
     {
         pinMode(_inputPins[i], INPUT);
         digitalWrite(_inputPins[i], HIGH);
@@ -62,15 +62,15 @@ word SegaController::getState()
         // Not enough time has elapsed, return previously read state
         return _currentState;
     }
-
-    // Update state before returning
-    _currentState = 0;
     
     noInterrupts();
+    
+    // Clear current state
+    _currentState = 0;
 
     digitalWrite(_selectPin, LOW);
 
-    for (int cycle = 0; cycle < SC_CYCLES; cycle++)
+    for (byte cycle = 0; cycle < SC_CYCLES; cycle++)
     {
         readCycle(cycle);
     }
@@ -80,15 +80,15 @@ word SegaController::getState()
     {
         _sixButtonMode = false;
     }
-
-    _lastReadTime = millis();
     
     interrupts();
+    
+    _lastReadTime = millis();
 
     return _currentState;
 }
 
-void SegaController::readCycle(int cycle)
+void SegaController::readCycle(byte cycle)
 {
     // Set the select pin high/low
     digitalWrite(_selectPin, cycle % 2 == 0 ? LOW : HIGH);

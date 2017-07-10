@@ -44,20 +44,20 @@ enum
     SC_BTN_MODE  = 4096
 };
 
-const int SC_INPUT_PINS = 6;
+const byte SC_INPUT_PINS = 6;
 
-const int SC_CYCLES = 8;
+const byte SC_CYCLES = 8;
 
-const int SC_READ_DELAY_MS = 5; // Must be >= 3 to give 6-button controller time to reset
+const unsigned long SC_READ_DELAY_MS = 5; // Must be >= 3 to give 6-button controller time to reset
 
 class SegaController {
     public:
-        SegaController(int db9_pin_7, int db9_pin_1, int db9_pin_2, int db9_pin_3, int db9_pin_4, int db9_pin_6, int db9_pin_9);
+        SegaController(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
 
         word getState();
 
     private:
-        void readCycle(int cycle);
+        void readCycle(byte cycle);
 
         word _currentState;
 
@@ -65,8 +65,8 @@ class SegaController {
 
         boolean _sixButtonMode;
 
-        int _selectPin; // output select pin
-        int _inputPins[SC_INPUT_PINS];
+        byte _selectPin; // output select pin
+        byte _inputPins[SC_INPUT_PINS];
 };
 
 #endif
