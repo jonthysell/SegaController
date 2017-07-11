@@ -49,6 +49,8 @@ output outputMap[] = {
     { SC_BTN_MODE,  'q' }
 };
 
+const byte BUTTONS = 12;
+
 // Specify the Arduino pins that are connected to
 // DB9 Pin 7, DB9 Pin 1, DB9 Pin 2, DB9 Pin 3, DB9 Pin 4, DB9 Pin 6, DB9 Pin 9
 SegaController controller(8, 2, 3, 4, 5, 6, 7);
@@ -70,10 +72,10 @@ void loop()
 
 void sendStates()
 {
-    for (int i = 0; i < sizeof(outputMap) / sizeof(output); i++)
+    for (byte i = 0; i < BUTTONS; i++)
     {
-        int last = (lastState & outputMap[i].button);
-        int current = (currentState & outputMap[i].button);
+        word last = (lastState & outputMap[i].button);
+        word current = (currentState & outputMap[i].button);
 
         if (last != current)
         {
