@@ -41,7 +41,9 @@ enum
     SC_BTN_X     = 512,
     SC_BTN_Y     = 1024,
     SC_BTN_Z     = 2048,
-    SC_BTN_MODE  = 4096
+    SC_BTN_MODE  = 4096,
+    SC_BTN_1     = 128, // Master System compatibility
+    SC_BTN_2     = 256  // Master System compatibility
 };
 
 const byte SC_INPUT_PINS = 6;

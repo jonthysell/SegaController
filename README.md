@@ -1,6 +1,6 @@
 # SegaController #
 
-The SegaController library enables your Arduino sketches to read Sega Genesis / Mega Drive controllers.
+The SegaController library enables your Arduino sketches to read Sega Genesis (Mega Drive) and Master System (Mark III) controllers.
 
 ## Installation ##
 
