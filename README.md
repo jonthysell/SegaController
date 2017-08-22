@@ -1,17 +1,30 @@
 # SegaController #
 
-The SegaController library enables your Arduino sketches to read Sega Genesis (Mega Drive) and Master System (Mark III) controllers.
+SegaController provides your Arduino sketches with an easy way to read Sega Genesis (Mega Drive) and Sega Master System (Mark III) controllers.
 
 ## Installation ##
 
-1. Download the latest source code zip from https://github.com/jonthysell/SegaController/releases/latest
+1. Download SegaController.zip from https://github.com/jonthysell/SegaController/releases/latest
 2. Open the Arduino IDE
 3. Open "Sketch > Include Library > Add .ZIP Library..."
 4. Select the zip file you downloaded in step 1
 
-## Getting Started ##
+## Usage ##
 
-There are two example sketches included which make use of the SegaController library. See "File > Examples > SegaController" in the Arduino IDE after installation.
+The controller pins are as follows, looking face on to the (female) DB9 plug:
+
+    5 4 3 2 1
+     9 8 7 6
+
+1. Connect controller pin 5 to +5VCC
+2. Connect controller pin 8 to GND
+3. Connect each remaining pin to a digital I/O pin on your Arduino
+4. In your sketch, include the SegaController library
+5. In your sketch, initialize a SegaController object with the digital pins you chose in step 3
+
+## Examples ##
+
+There are two example sketches included which make use of the SegaController library. See "File > Examples > SegaController" in the Arduino IDE after installation. Make sure the digital pins you've wired matches those chosen in the code.
 
 ### SegaControllerSerialReader ###
 
@@ -23,6 +36,6 @@ This sketch reads the state of a single controller and simulates key presses via
 
 ## More Info ##
 
-For more information on how the controllers actually work, see [How To Read Sega Controllers](https://github.com/jonthysell/SegaController/wiki/How-To-Read-Sega-Controllers)
+For details on how SegaController reads the controller's state, see [How To Read Sega Controllers](https://github.com/jonthysell/SegaController/wiki/How-To-Read-Sega-Controllers)
 
 Copyright (c) 2017 Jon Thysell
