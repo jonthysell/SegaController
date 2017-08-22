@@ -1,6 +1,6 @@
 # SegaController #
 
-SegaController provides Arduino sketches with an easy way to read Sega Genesis (Mega Drive) and Master System (Mark III) controllers.
+Read Sega Genesis (Mega Drive) and Master System (Mark III) controllers in your Arduino sketches.
 
 ## Installation ##
 
