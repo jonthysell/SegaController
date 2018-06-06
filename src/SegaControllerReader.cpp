@@ -39,12 +39,12 @@ SegaControllerReader::SegaControllerReader(byte db9_pin_7, byte db9_pin_1, byte 
     _inputPins[4] = db9_pin_6;
     _inputPins[5] = db9_pin_9;
 
-    // Setup output pin
+    // Setup select pin
     pinMode(_selectPin, OUTPUT);
     digitalWrite(_selectPin, HIGH);
 
     // Setup input pins
-    for (byte i = 0; i < SC_INPUT_PINS; i++)
+    for (byte i = 0; i < SC_IO_PINS; i++)
     {
         pinMode(_inputPins[i], INPUT_PULLUP);
     }
@@ -115,6 +115,7 @@ void SegaControllerReader::readCycle(byte cycle)
             if (digitalRead(_inputPins[5]) == LOW) { _currentState |= SC_BTN_C; }
             break;
         case 4:
+            // Read Up and Down to detect a six-button controller
             _sixButtonMode = (digitalRead(_inputPins[0]) == LOW && digitalRead(_inputPins[1]) == LOW);
             break;
         case 5:

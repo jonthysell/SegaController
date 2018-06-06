@@ -1,5 +1,5 @@
 //
-// SegaControllerReader.h
+// SegaControllerWriter.h
 //
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -26,28 +26,31 @@
 
 #include "constants.h"
 
-#ifndef SegaControllerReader_h
-#define SegaControllerReader_h
+#ifndef SegaControllerWriter_h
+#define SegaControllerWriter_h
 
-const unsigned long SC_READ_DELAY_MS = 5; // Must be >= 3 to give 6-button controller time to reset
-
-class SegaControllerReader {
+class SegaControllerWriter {
     public:
-        SegaControllerReader(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
+        SegaControllerWriter(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
 
-        word getState();
+        void readSelectPin();
+        void setState(word state);
 
     private:
-        void readCycle(byte cycle);
+        void writeCycle();
 
         word _currentState;
+        
+        byte _currentCycle;
+        
+        boolean _selectPinHigh;
 
-        unsigned long _lastReadTime;
+        unsigned long _lastSelectTime;
 
         boolean _sixButtonMode;
 
-        byte _selectPin; // output select pin
-        byte _inputPins[SC_IO_PINS];
+        byte _selectPin; // input select pin
+        byte _outputPins[SC_IO_PINS];
 };
 
 #endif
