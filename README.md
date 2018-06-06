@@ -20,7 +20,7 @@ The controller pins are as follows, looking face on to the (female) DB9 plug:
 2. Connect controller pin 8 to GND
 3. Connect each remaining pin to a digital I/O pin on your Arduino
 4. In your sketch, include the SegaController library
-5. In your sketch, initialize a SegaController object with the digital pins you chose in step 3
+5. In your sketch, initialize a SegaControllerReader object with the digital pins you chose in step 3
 
 ## Examples ##
 
@@ -38,4 +38,4 @@ This sketch reads the state of a single controller and simulates key presses via
 
 For details on how SegaController reads the controller's state, see [How To Read Sega Controllers](https://github.com/jonthysell/SegaController/wiki/How-To-Read-Sega-Controllers).
 
-Copyright (c) 2017 Jon Thysell
+Copyright (c) 2017-2018 Jon Thysell

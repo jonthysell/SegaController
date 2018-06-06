@@ -1,10 +1,10 @@
 //
-// SegaController.h
+// SegaControllerReader.h
 //
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 //
-// Copyright (c) 2017 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2017-2018 Jon Thysell <http://jonthysell.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#ifndef SegaController_h
-#define SegaController_h
+#ifndef SegaControllerReader_h
+#define SegaControllerReader_h
 
 enum
 {
@@ -52,9 +52,9 @@ const byte SC_CYCLES = 8;
 
 const unsigned long SC_READ_DELAY_MS = 5; // Must be >= 3 to give 6-button controller time to reset
 
-class SegaController {
+class SegaControllerReader {
     public:
-        SegaController(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
+        SegaControllerReader(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
 
         word getState();
 

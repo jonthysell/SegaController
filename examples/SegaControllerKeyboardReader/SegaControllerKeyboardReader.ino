@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 //
-// Copyright (c) 2017 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2017-2018 Jon Thysell <http://jonthysell.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 #include <Keyboard.h>
-#include <SegaController.h>
+#include <SegaControllerReader.h>
 
 typedef struct
 {
@@ -61,7 +61,7 @@ const byte BUTTONS = 12;
 
 // Specify the Arduino pins that are connected to
 // DB9 Pin 7, DB9 Pin 1, DB9 Pin 2, DB9 Pin 3, DB9 Pin 4, DB9 Pin 6, DB9 Pin 9
-SegaController controller(8, 2, 3, 4, 5, 6, 7);
+SegaControllerReader controller(8, 2, 3, 4, 5, 6, 7);
 
 // Controller states
 word currentState = 0;

@@ -1,10 +1,10 @@
 //
-// SegaController.cpp
+// SegaControllerReader.cpp
 //
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 //
-// Copyright (c) 2017 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2017-2018 Jon Thysell <http://jonthysell.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,9 +25,9 @@
 // THE SOFTWARE.
 
 #include "Arduino.h"
-#include "SegaController.h"
+#include "SegaControllerReader.h"
 
-SegaController::SegaController(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9)
+SegaControllerReader::SegaControllerReader(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9)
 {
     // Set pins
     _selectPin = db9_pin_7;
@@ -54,7 +54,7 @@ SegaController::SegaController(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, b
     _lastReadTime = millis();
 }
 
-word SegaController::getState()
+word SegaControllerReader::getState()
 {
     if (max(millis() - _lastReadTime, 0) < SC_READ_DELAY_MS)
     {
@@ -85,7 +85,7 @@ word SegaController::getState()
     return _currentState;
 }
 
-void SegaController::readCycle(byte cycle)
+void SegaControllerReader::readCycle(byte cycle)
 {
     // Set the select pin low/high
     digitalWrite(_selectPin, cycle % 2);

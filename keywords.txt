@@ -6,7 +6,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-SegaController	KEYWORD1
+SegaControllerReader	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
