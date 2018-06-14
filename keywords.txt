@@ -7,12 +7,15 @@
 #######################################
 
 SegaControllerReader	KEYWORD1
+SegaControllerWriter	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
 getState	KEYWORD2
+setState    KEYWORD2
+readSelectPin   KEYWORD2
 
 #######################################
 # Instances (KEYWORD2)
