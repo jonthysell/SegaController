@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <Arduino.h>
 #include <SegaControllerReader.h>
 
 // Controller DB9 pins (looking face-on to the end of the plug):
