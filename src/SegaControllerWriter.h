@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 //
-// Copyright (c) 2017-2018 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2018 Jon Thysell <http://jonthysell.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,8 @@
 #ifndef SegaControllerWriter_h
 #define SegaControllerWriter_h
 
+const unsigned long SC_SELECT_DELAY_MS = 5; // Must be <= 3 to simulate 6-button controller cycle reset
+
 class SegaControllerWriter {
     public:
         SegaControllerWriter(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9);
@@ -45,7 +47,7 @@ class SegaControllerWriter {
         
         boolean _selectPinHigh;
 
-        unsigned long _lastSelectTime;
+        unsigned long _lastTimeSelectChanged;
 
         boolean _sixButtonMode;
 

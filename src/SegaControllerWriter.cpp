@@ -27,7 +27,7 @@
 #include <Arduino.h>
 #include "SegaControllerWriter.h"
 
-#define CONTROLLER_CONNECTED (_currentState & SC_CTL_ON == SC_CTL_ON)
+#define CONTROLLER_CONNECTED (_currentState & SC_CTL_ON)
 
 SegaControllerWriter::SegaControllerWriter(byte db9_pin_7, byte db9_pin_1, byte db9_pin_2, byte db9_pin_3, byte db9_pin_4, byte db9_pin_6, byte db9_pin_9)
 {
@@ -55,17 +55,28 @@ SegaControllerWriter::SegaControllerWriter(byte db9_pin_7, byte db9_pin_1, byte 
     _currentCycle = SC_CYCLES - 1;
     _selectPinHigh = true;
     _sixButtonMode = true;
+
+    _lastTimeSelectChanged = millis();
 }
 
 void SegaControllerWriter::readSelectPin()
 {
     boolean last = _selectPinHigh;
-    _selectPinHigh = digitalRead(_selectPin) == HIGH;
-    
+    _selectPinHigh = (digitalRead(_selectPin) == HIGH);
+
+    unsigned long readTime = millis();
+
     if (last != _selectPinHigh)
     {
+        if (max(readTime - _lastTimeSelectChanged, 0) >= SC_SELECT_DELAY_MS)
+        {
+            // Too much time has passed, reset
+            _currentCycle = SC_CYCLES - 1;
+        }
+
         _currentCycle = (_currentCycle + 1) % SC_CYCLES;
         writeCycle();
+        _lastTimeSelectChanged = readTime;
     }
 }
 
@@ -89,19 +100,19 @@ void SegaControllerWriter::writeCycle()
             digitalWrite(_outputPins[3], CONTROLLER_CONNECTED ? LOW : HIGH);
             
             // Write output pins for A, Start
-            digitalWrite(_outputPins[4], CONTROLLER_CONNECTED && _currentState & SC_BTN_A == SC_BTN_A ? LOW : HIGH);
-            digitalWrite(_outputPins[5], CONTROLLER_CONNECTED && _currentState & SC_BTN_START == SC_BTN_START ? LOW : HIGH);
+            digitalWrite(_outputPins[4], CONTROLLER_CONNECTED && (_currentState & SC_BTN_A) ? LOW : HIGH);
+            digitalWrite(_outputPins[5], CONTROLLER_CONNECTED && (_currentState & SC_BTN_START) ? LOW : HIGH);
             break;
         case 1:
         case 3:
         case 7:
             // Write output pins for Up, Down, Left, Right, B, C
-            digitalWrite(_outputPins[0], CONTROLLER_CONNECTED && _currentState & SC_BTN_UP == SC_BTN_UP ? LOW : HIGH);
-            digitalWrite(_outputPins[1], CONTROLLER_CONNECTED && _currentState & SC_BTN_DOWN == SC_BTN_DOWN ? LOW : HIGH);
-            digitalWrite(_outputPins[2], CONTROLLER_CONNECTED && _currentState & SC_BTN_LEFT == SC_BTN_LEFT ? LOW : HIGH);
-            digitalWrite(_outputPins[3], CONTROLLER_CONNECTED && _currentState & SC_BTN_RIGHT == SC_BTN_RIGHT ? LOW : HIGH);
-            digitalWrite(_outputPins[4], CONTROLLER_CONNECTED && _currentState & SC_BTN_B == SC_BTN_B ? LOW : HIGH);
-            digitalWrite(_outputPins[5], CONTROLLER_CONNECTED && _currentState & SC_BTN_C == SC_BTN_C ? LOW : HIGH);
+            digitalWrite(_outputPins[0], CONTROLLER_CONNECTED && (_currentState & SC_BTN_UP) ? LOW : HIGH);
+            digitalWrite(_outputPins[1], CONTROLLER_CONNECTED && (_currentState & SC_BTN_DOWN) ? LOW : HIGH);
+            digitalWrite(_outputPins[2], CONTROLLER_CONNECTED && (_currentState & SC_BTN_LEFT) ? LOW : HIGH);
+            digitalWrite(_outputPins[3], CONTROLLER_CONNECTED && (_currentState & SC_BTN_RIGHT) ? LOW : HIGH);
+            digitalWrite(_outputPins[4], CONTROLLER_CONNECTED && (_currentState & SC_BTN_B) ? LOW : HIGH);
+            digitalWrite(_outputPins[5], CONTROLLER_CONNECTED && (_currentState & SC_BTN_C) ? LOW : HIGH);
             break;
         case 4:
             // Write Up and Down to specify a six-button controller
@@ -115,10 +126,10 @@ void SegaControllerWriter::writeCycle()
             break;
         case 5:
             // Write output pins for X, Y, Z, Mode
-            digitalWrite(_outputPins[0], CONTROLLER_CONNECTED && _sixButtonMode && _currentState & SC_BTN_Z == SC_BTN_Z ? LOW : HIGH);
-            digitalWrite(_outputPins[1], CONTROLLER_CONNECTED && _sixButtonMode && _currentState & SC_BTN_Y == SC_BTN_Y ? LOW : HIGH);
-            digitalWrite(_outputPins[2], CONTROLLER_CONNECTED && _sixButtonMode && _currentState & SC_BTN_X == SC_BTN_X ? LOW : HIGH);
-            digitalWrite(_outputPins[3], CONTROLLER_CONNECTED && _sixButtonMode && _currentState & SC_BTN_MODE == SC_BTN_MODE ? LOW : HIGH);
+            digitalWrite(_outputPins[0], CONTROLLER_CONNECTED && _sixButtonMode && (_currentState & SC_BTN_Z) ? LOW : HIGH);
+            digitalWrite(_outputPins[1], CONTROLLER_CONNECTED && _sixButtonMode && (_currentState & SC_BTN_Y) ? LOW : HIGH);
+            digitalWrite(_outputPins[2], CONTROLLER_CONNECTED && _sixButtonMode && (_currentState & SC_BTN_X) ? LOW : HIGH);
+            digitalWrite(_outputPins[3], CONTROLLER_CONNECTED && _sixButtonMode && (_currentState & SC_BTN_MODE) ? LOW : HIGH);
             
             digitalWrite(_outputPins[4], HIGH);
             digitalWrite(_outputPins[5], HIGH);
